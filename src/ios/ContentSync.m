@@ -141,6 +141,12 @@
     NSError *error = nil;
     [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&response error:&error];
     
+NSLog(@"srcURL from %@", srcURL);
+NSLog(@"srcURL.scheme from %@", srcURL.scheme);
+NSLog(@"srcURL.host from %@", srcURL.host);
+NSLog(@"error from %@", error);
+NSLog(@"response.statusCode from %@", response.statusCode);
+
     if(srcURL && srcURL.scheme && srcURL.host && error == nil && response.statusCode < 400) {
 
         BOOL trustHost = [command argumentAtIndex:7 withDefault:@(NO)];
