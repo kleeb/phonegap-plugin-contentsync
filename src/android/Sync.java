@@ -516,9 +516,8 @@ public class Sync extends CordovaPlugin {
                 try {
                     JSONObject result = new JSONObject();
                     result.put(PROP_LOCAL_PATH, outputDirectory);
-                    result.put(PROP_CACHED, type.equals(TYPE_LOCAL));
-                    File outputIndexFile = new File(outputDirectory + "/www/index.html");
-                    result.put("hasData", outputIndexFile.exists());                    
+                    File outputIndexFile = new File(outputDirectory + "/www/index.html");                    
+                    result.put(PROP_CACHED, type.equals(TYPE_LOCAL) && outputIndexFile.exists());
                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, result));
                 } catch (Exception e) {
                     // never happens
