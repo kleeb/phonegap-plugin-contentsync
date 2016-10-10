@@ -145,7 +145,7 @@ NSLog(@"srcURL from %@", srcURL);
 NSLog(@"srcURL.scheme from %@", srcURL.scheme);
 NSLog(@"srcURL.host from %@", srcURL.host);
 NSLog(@"error from %@", error);
-NSLog(@"response.statusCode from %@", response.statusCode);
+NSLog(@"response.statusCode from %@", (long) response.statusCode);
 
     if(srcURL && srcURL.scheme && srcURL.host && error == nil && response.statusCode < 400) {
 
