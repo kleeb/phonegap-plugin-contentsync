@@ -532,25 +532,27 @@
 - (void)loadUrl:(CDVInvokedUrlCommand*) command {
     NSString* url = [command argumentAtIndex:0 withDefault:nil];
     NSLog(@"Loading URL %@", url);
+    url = [url stringByReplacingOccurrencesOfString:@"file://" withString:@""];
+    NSURLComponents *components = [NSURLComponents new];
+    components.scheme = @"file";
+    components.path = [NSString stringWithFormat:@"%@", url];
     
-    NSURL* fileURLWithPath = [NSURL fileURLWithPath:url];
     SEL wkWebViewSelector = NSSelectorFromString(@"loadFileURL:allowingReadAccessToURL:");
-    NSLog(@"Redirecting to: %@", fileURLWithPath.absoluteString);
     
     if ([self.webView respondsToSelector:wkWebViewSelector]) {
         dispatch_async(dispatch_get_main_queue(), ^(void){
-            NSURL *readAccessUrl = [fileURLWithPath URLByDeletingLastPathComponent];
+            NSURL *readAccessUrl = [components.URL URLByDeletingLastPathComponent];
             NSLog(@"Reloading the WKWebView.");
             SEL wkWebViewReloadSelector = NSSelectorFromString(@"reload");
             ((id (*)(id, SEL))objc_msgSend)(self.webView, wkWebViewReloadSelector);
-            ((id (*)(id, SEL, id, id))objc_msgSend)(self.webView, wkWebViewSelector, fileURLWithPath, readAccessUrl);
+            ((id (*)(id, SEL, id, id))objc_msgSend)(self.webView, wkWebViewSelector, components.URL, readAccessUrl);
         });
     }
     else {
         dispatch_async(dispatch_get_main_queue(), ^(void){
             NSLog(@"Reloading the UIWebView.");
             [((UIWebView*)self.webView) reload];
-            [((UIWebView*)self.webView) loadRequest: [NSURLRequest requestWithURL:fileURLWithPath] ];
+            [((UIWebView*)self.webView) loadRequest: [NSURLRequest requestWithURL:components.URL] ];
         });
     }
     
