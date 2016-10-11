@@ -531,13 +531,29 @@
 #ifdef __CORDOVA_4_0_0
 - (void)loadUrl:(CDVInvokedUrlCommand*) command {
     NSString* url = [command argumentAtIndex:0 withDefault:nil];
-    if(url != nil) {
-        NSLog(@"Loading URL %@", url);
-        NSURLRequest* request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-        [self.webViewEngine loadRequest:request];
-    } else {
-        NSLog(@"URL IS NIL");
+    NSLog(@"Loading URL %@", url);
+    
+    NSURL* fileURLWithPath = [NSURL fileURLWithPath:url];
+    SEL wkWebViewSelector = NSSelectorFromString(@"loadFileURL:allowingReadAccessToURL:");
+    NSLog(@"Redirecting to: %@", fileURLWithPath.absoluteString);
+    
+    if ([self.webView respondsToSelector:wkWebViewSelector]) {
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            NSURL *readAccessUrl = [fileURLWithPath URLByDeletingLastPathComponent];
+            NSLog(@"Reloading the WKWebView.");
+            SEL wkWebViewReloadSelector = NSSelectorFromString(@"reload");
+            ((id (*)(id, SEL))objc_msgSend)(self.webView, wkWebViewReloadSelector);
+            ((id (*)(id, SEL, id, id))objc_msgSend)(self.webView, wkWebViewSelector, fileURLWithPath, readAccessUrl);
+        });
     }
+    else {
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            NSLog(@"Reloading the UIWebView.");
+            [((UIWebView*)self.webView) reload];
+            [((UIWebView*)self.webView) loadRequest: [NSURLRequest requestWithURL:fileURLWithPath] ];
+        });
+    }
+    
 }
 #endif
 
