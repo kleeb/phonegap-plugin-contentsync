@@ -136,16 +136,10 @@
     // checking if URL is valid
     NSURL *srcURL = [NSURL URLWithString:src];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:srcURL];
-    [urlRequest setHTTPMethod:@"HEAD"];
+    [urlRequest setHTTPMethod:@"GET"];
     NSHTTPURLResponse *response = nil;
     NSError *error = nil;
     [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&response error:&error];
-    
-NSLog(@"srcURL from %@", srcURL);
-NSLog(@"srcURL.scheme from %@", srcURL.scheme);
-NSLog(@"srcURL.host from %@", srcURL.host);
-NSLog(@"error from %@", error);
-NSLog(@"response.statusCode from %@", (long) response.statusCode);
 
     if(srcURL && srcURL.scheme && srcURL.host && error == nil && response.statusCode < 400) {
 
